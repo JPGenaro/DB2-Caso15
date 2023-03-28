@@ -270,6 +270,6 @@ AND fechaInicio = DATE_SUB(NOW(), INTERVAL 4 MONTH) + INTERVAL 19 DAY;
 SELECT SUM(montoExtra) AS montoTotal, MAX(montoExtra) AS maxMonto, MIN(montoExtra) AS minMonto, nombre AS proyecto
 FROM Proyecto
 WHERE idEstadoProyecto = 2 AND fechaFin >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-GROUP BY nombre
+GROUP BY nombre;
 
 #3
