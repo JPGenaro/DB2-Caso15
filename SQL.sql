@@ -129,8 +129,6 @@ CREATE TABLE Cronograma (
   idCronograma INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50),
   descripcion VARCHAR(100),
-  fechaInicio DATE,
-  fechaFinal DATE,
   idObra INT,
   FOREIGN KEY (idObra) REFERENCES Obra(idObra) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -140,6 +138,8 @@ CREATE TABLE Proyecto (
   nombre VARCHAR(50),
   descripcion VARCHAR(100),
   montoExtra DECIMAL(10,2),
+  fechaInicio DATE,
+  fechaFinal DATE,
   idCronograma INT,
   idEstadoProyecto INT,
   FOREIGN KEY (idCronograma) REFERENCES Cronograma(idCronograma) 
@@ -259,3 +259,17 @@ INSERT INTO Obra (direccion, fechaInicio, fechaFinal, idCliente, idEstadoObra) V
 ('La manzana 675 de Newton 21', '2022-12-05', '2023-06-30', 5, 1),
 ('Juan Lantin 432', '2021-08-15', '2022-02-28', 6, 2),
 ('La calle 8789', '2022-01-01', NULL, 8, 3);
+
+#1 
+SELECT *
+FROM Proyecto
+WHERE idEstadoProyecto = (SELECT idEstadoProyecto FROM EstadoProyecto WHERE nombre = 'Progreso')
+AND fechaInicio = DATE_SUB(NOW(), INTERVAL 4 MONTH) + INTERVAL 19 DAY;
+
+#2
+SELECT SUM(montoExtra) AS montoTotal, MAX(montoExtra) AS maxMonto, MIN(montoExtra) AS minMonto, nombre AS proyecto
+FROM Proyecto
+WHERE idEstadoProyecto = 2 AND fechaFin >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+GROUP BY nombre
+
+#3
