@@ -204,3 +204,58 @@ CREATE TABLE UnidadMedida (
     ON DELETE SET NULL 
     ON UPDATE CASCADE
 );
+
+
+INSERT INTO TipoDocumento (nombre, descripcion) VALUES
+('DNI', 'Documento Nacional de Identidad'),
+('Pasaporte', 'Pasaporte internacional'),
+('Cedula', 'Cedula de Identidad'),
+('RUC', 'Registro Único de Contribuyentes'),
+('Carnet de Extranjeria', 'Carnet para extranjeros');
+
+INSERT INTO Personas (nombre, apellido, email, numeroDocumento, idTipoDocumento) VALUES
+('Pepito', 'Peponcio', 'holasoypepito@gmail.com', '12345678', 1),
+('Genaro', 'JuanCarlos', 'jcgenaro@yahoo.com', '87654321', 2),
+('Joaco', 'ElCapo', 'elcapodejoaco@hotmail.com', '23456789', 3),
+('María', 'Laura', 'marialaura@gmail.com', '34567890', 1),
+('Armando', 'Barreras', 'acasamexico@hotmail.com', '45678901', 4),
+('Ducky', 'Elpato', 'nashe@gmail.com', '3344556677', 1),
+('Facha', 'Fachero', 'facher05mb@gmail.com.ar', '83289203', 2),
+('Elon', 'Maskara', 'tengomoney@hotmail.com', '000000000', 5),
+('Gustavo', 'Alfonso', 'gustavito@gmail.com', '3543696768', 1),
+('Kiki', 'Naki', 'lakikiynaki@hotmail.com', '98765432', 1);
+
+INSERT INTO Cliente (idCliente, fechaRegistro) VALUES
+(1, '2022-01-15'),
+(2, '2021-05-23'),
+(5, '2022-02-28'),
+(6, '2020-12-01'),
+(8, '2022-03-10');
+
+INSERT INTO Empleado (idEmpleado, fechaNacimiento) VALUES
+(3, '1995-07-12'),
+(4, '1987-11-30'),
+(7, '1992-03-08'),
+(9, '1985-05-18'),
+(10, '1998-02-05');
+
+INSERT INTO EstadoProyecto (nombre, descripcion) VALUES
+('En Proceso', 'Proyecto en desarrollo'),
+('Finalizado', 'Proyecto completado'),
+('Cancelado', 'Proyecto cancelado'),
+('En Espera', 'Proyecto en espera'),
+('Suspendido', 'Proyecto suspendido');
+
+INSERT INTO EstadoObra (nombre, descripcion) VALUES
+('En Proceso', 'Obra en construcción'),
+('Finalizado', 'Obra completada'),
+('Cancelado', 'Obra cancelada'),
+('En Espera', 'Obra en espera'),
+('Suspendido', 'Obra suspendida');
+
+INSERT INTO Obra (direccion, fechaInicio, fechaFinal, idCliente, idEstadoObra) VALUES
+('Calle piola 1441', '2022-02-10', NULL, 1, 1),
+('Avenida 456', '2021-10-20', '2022-04-15', 2, 2),
+('La manzana 675 de Newton 21', '2022-12-05', '2023-06-30', 5, 1),
+('Juan Lantin 432', '2021-08-15', '2022-02-28', 6, 2),
+('La calle 8789', '2022-01-01', NULL, 8, 3);
