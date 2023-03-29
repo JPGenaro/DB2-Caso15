@@ -328,12 +328,11 @@ INSERT INTO Proyecto (nombre, descripcion, montoExtra, fechaInicio, fechaFinal, 
 ('Construccion de bunker', 'Proyecto de Construccion de bunker', 300000.00, '2022-05-01', '2022-08-01', 5, 5);
 
 INSERT INTO EmpleadosProyecto (idEmpleado, idProyecto) VALUES
-(1, 1),
-(2, 1),
-(3, 2),
-(4, 3),
-(5, 3);
-
+(3, 1),
+(4, 1),
+(7, 2),
+(9, 3),
+(10, 3);
 
 INSERT INTO UnidadMedida (nombre, descripcion) VALUES
 ('Bolsa', 'Unidad de medida equivalente a una bolsa'),
@@ -345,7 +344,7 @@ INSERT INTO UnidadMedida (nombre, descripcion) VALUES
 INSERT INTO Material (nombre, descripcion, precioUnitario, idUnidadMedida) VALUES
 ('Cemento', 'Material de construcción', 50.00, 1),
 ('Arena', 'Material de construcción', 20.00, 3),
-('Ladrillo', 'Material de construcción', 1,50, 4),
+('Ladrillo', 'Material de construcción', 1.50, 4),
 ('Pintura', 'Material de acabado', 25.00, 2),
 ('Madera', 'Material de construcción', 100.00, 5);
 
@@ -353,7 +352,7 @@ INSERT INTO EstadoInventario (nombre, descripcion) VALUES
 ('Disponible', 'El material está disponible para su uso'),
 ('En uso', 'El material se encuentra en uso'),
 ('Agotado', 'El material se ha terminado'),
-('Requerido', 'El material no se encuentra, pero se requiere');
+('Requerido', 'El material no se encuentra, pero se requiere'),
 ('Cancelado', 'El material fue cancelado');
 
 INSERT INTO Inventario (cantMaterial, fechaActual, precioUnitarioActual, idProyecto, idMaterial, idEstadoInventario) VALUES
