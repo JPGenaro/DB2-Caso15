@@ -114,15 +114,19 @@ CREATE TABLE EstadoRegistroCalidad (
   descripcion VARCHAR(100)
 );
 
-CREATE TABLE registroCalidad (
-  idregistroCalidad INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE RegistroCalidad (
+  idRegistroCalidad INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50),
   descripcion VARCHAR(100),
   fecha DATE,
   idObra INT,
   idEstadoRegistroCalidad INT,
-  FOREIGN KEY (idObra) REFERENCES Obra(idObra) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (idEstadoRegistroCalidad) REFERENCES EstadoRegistroCalidad(idEstadoRegistroCalidad) ON DELETE SET NULL ON UPDATE CASCADE
+  FOREIGN KEY (idObra) REFERENCES Obra(idObra) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE,
+  FOREIGN KEY (idEstadoRegistroCalidad) REFERENCES EstadoRegistroCalidad(idEstadoRegistroCalidad) 
+    ON DELETE SET NULL 
+    ON UPDATE CASCADE
 );
 
 CREATE TABLE Cronograma (
@@ -130,7 +134,9 @@ CREATE TABLE Cronograma (
   nombre VARCHAR(50),
   descripcion VARCHAR(100),
   idObra INT,
-  FOREIGN KEY (idObra) REFERENCES Obra(idObra) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (idObra) REFERENCES Obra(idObra) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE
 );
 
 CREATE TABLE Proyecto (
@@ -162,14 +168,21 @@ CREATE TABLE EmpleadosProyecto (
     ON DELETE SET NULL
 );
 
+CREATE TABLE UnidadMedida (
+  idUnidadMedida INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+  nombre VARCHAR(50) NOT NULL,
+  descripcion VARCHAR(200),
+  
+  
+);
 
-CREATE TABLE Inventario (
-  idInventario INT AUTO_INCREMENT PRIMARY KEY,
-  cantMaterial INT,
-  fechaActual DATE,
-  precioUnitarioActual DECIMAL(10,2),
-  idProyecto INT,
-  FOREIGN KEY (idProyecto) REFERENCES Proyecto(idProyecto) 
+CREATE TABLE Material (
+  idMaterial INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50),
+  descripcion TEXT,
+  precioUnitario DECIMAL(10,2),
+  idUnidadMedida INT,
+  FOREIGN KEY (idUnidadMedida) REFERENCES UnidadMedida(idUnidadMedida) 
     ON DELETE SET NULL 
     ON UPDATE CASCADE
 );
@@ -178,34 +191,30 @@ CREATE TABLE EstadoInventario (
   idEstadoInventario INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50),
   descripcion TEXT,
-  idInventario INT,
-  FOREIGN KEY (idInventario) REFERENCES Inventario(idInventario) 
-    ON DELETE SET NULL 
-    ON UPDATE CASCADE
 );
 
-CREATE TABLE Material (
-  idMaterial INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(50),
-  descripcion TEXT,
-  precioUnitario DECIMAL(10,2),
-  idInventario INT,
-  FOREIGN KEY (idInventario) REFERENCES Inventario(idInventario) 
-    ON DELETE SET NULL 
-    ON UPDATE CASCADE
-);
-
-CREATE TABLE UnidadMedida (
-  idUnidadMedida INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-  nombre VARCHAR(50) NOT NULL,
-  descripcion VARCHAR(200),
+CREATE TABLE Inventario (
+  idInventario INT AUTO_INCREMENT PRIMARY KEY,
+  cantMaterial INT,
+  fechaActual DATE,
+  precioUnitarioActual DECIMAL(10,2),
+  idProyecto INT,
   idMaterial INT NOT NULL,
+
+  FOREIGN KEY (idProyecto) REFERENCES Proyecto(idProyecto) 
+    ON DELETE SET NULL 
+    ON UPDATE CASCADE,
   FOREIGN KEY (idMaterial) REFERENCES Material(idMaterial) 
     ON DELETE SET NULL 
+    ON UPDATE CASCADE,
+  FOREIGN KEY (idEstadoInventario) REFERENCES EstadoInventario(idEstadoInventario) 
+    ON DELETE SET NULL 
     ON UPDATE CASCADE
 );
 
 
+
+#Inserts
 INSERT INTO TipoDocumento (nombre, descripcion) VALUES
 ('DNI', 'Documento Nacional de Identidad'),
 ('Pasaporte', 'Pasaporte internacional'),
@@ -239,13 +248,6 @@ INSERT INTO Empleado (idEmpleado, fechaNacimiento) VALUES
 (9, '1985-05-18'),
 (10, '1998-02-05');
 
-INSERT INTO EstadoProyecto (nombre, descripcion) VALUES
-('En Proceso', 'Proyecto en desarrollo'),
-('Finalizado', 'Proyecto completado'),
-('Cancelado', 'Proyecto cancelado'),
-('En Espera', 'Proyecto en espera'),
-('Suspendido', 'Proyecto suspendido');
-
 INSERT INTO EstadoObra (nombre, descripcion) VALUES
 ('En Proceso', 'Obra en construcción'),
 ('Finalizado', 'Obra completada'),
@@ -254,11 +256,117 @@ INSERT INTO EstadoObra (nombre, descripcion) VALUES
 ('Suspendido', 'Obra suspendida');
 
 INSERT INTO Obra (direccion, fechaInicio, fechaFinal, idCliente, idEstadoObra) VALUES
-('Calle piola 1441', '2022-02-10', NULL, 1, 1),
+('Calle piola 1441', '2022-11-10', NULL, 1, 1),
 ('Avenida 456', '2021-10-20', '2022-04-15', 2, 2),
 ('La manzana 675 de Newton 21', '2022-12-05', '2023-06-30', 5, 1),
 ('Juan Lantin 432', '2021-08-15', '2022-02-28', 6, 2),
 ('La calle 8789', '2022-01-01', NULL, 8, 3);
+
+
+
+INSERT INTO GastosAsociados (nombre, descripcion, monto, fechaActual, idObra)
+VALUES
+('Impuestos', 'Pago de impuestos anuales', 1500.00, '2022-03-01', 1),
+('Impuestos', 'Pago de impuestos anuales', 5000.00, '2022-04-15', 2),
+('Transporte', 'Gastos en transporte de materiales', 3000.00, '2023-03-28', 3),
+('Publicidad', 'Gastos en publicidad para promocionar la obra', 2000.00, '2022-04-10', 1),
+('Transporte', 'Gastos en transporte de materiales', 1000.00, '2022-05-05', 5);
+
+INSERT INTO Evaluacion (titulo, critica, valoracion, fecha, idObra) VALUES
+('Excelente', 'La obra empieza excelente en todos los aspectos', 5, '2023-01-20', 1),
+('Mala actuación', 'La actuación de los obreros fue indisiplanada en la ultima semana', 2, '2023-02-05', 1),
+('Muy Mal Desempeño', 'Muy mala en todos los sentidos, una caca', 1, '2022-08-10', 3),
+('Excelente', 'La obra empieza excelente en todos los aspectos, y fuimos campeones del mundo osea', 4, '2022-12-18', 4),
+('Desempeño Normal', 'El desempeño de la obra ni pincha ni corta', 3, '2022-05-15', 3);
+
+INSERT INTO EstadoCambioExtra (nombre, descripcion) VALUES
+('En proceso', 'Cambio extra en proceso'),
+('Aprobado', 'Cambio extra aprobado'),
+('Rechazado', 'Cambio extra rechazado'),
+('Pendiente', 'Cambio extra esta pendiente'),
+('Cancelado', 'Cambio extra fue cancelado');
+
+INSERT INTO CambioExtra (nombre, descripcion, fecha, idObra, idEstadoCambioExtra) VALUES
+('Otro baño', 'Quiero un baño extra para mi suegra', '2023-01-02', 1, 1),
+('Un Bunker AntiBombas', 'Quiero un bunker anti-bombas', '2022-03-22', 5, 3),
+('Un Nuevo Revoque De Piso', 'Cambiar el piso de color', '2022-12-30', 1, 2),
+('Un Asador', 'Un Asador bien fachero', '2022-08-20', 3, 2),
+('Otro baño', 'Quiero un baño extra', '2023-01-10', 3, 3);
+
+INSERT INTO EstadoRegistroCalidad (nombre, descripcion) VALUES
+('En proceso', 'Registro de calidad en proceso'),
+('Aprobado', 'Registro de calidad aprobado'),
+('Rechazado', 'Registro de calidad rechazado'),
+('Pendiente', 'Registro de calidad esta pendiente'),
+('Cancelado', 'Registro de calidad fue cancelado');
+
+INSERT INTO registroCalidad (nombre, descripcion, fecha, idObra, idEstadoRegistroCalidad) VALUES
+('Calidad de materiales', 'Registro de calidad de los materiales utilizados', '2022-12-25', 1, 1),
+('Calidad de acabados', 'Registro de calidad de los acabados de la obra', '2022-07-15', 2, 2),
+('Calidad de instalaciones', 'Registro de calidad de las instalaciones de la obra', '2023-03-20', 3, 3),
+('Calidad de estructura', 'Registro de calidad de la estructura de la obra', '2022-04-30', 4, 4),
+('Calidad de limpieza', 'Registro de calidad de la limpieza de la obra', '2022-05-10', 5, 5);
+
+INSERT INTO EstadoProyecto (nombre, descripcion) VALUES
+('En Proceso', 'Proyecto en desarrollo'),
+('Finalizado', 'Proyecto completado'),
+('Cancelado', 'Proyecto cancelado'),
+('En Espera', 'Proyecto en espera'),
+('Suspendido', 'Proyecto suspendido');
+
+INSERT INTO Cronograma (nombre, descripcion, idObra) VALUES
+('Cronograma de construcción', 'Cronograma de construcción de la obra', 1),
+('Cronograma de remodelación', 'Cronograma de remodelación de la obra', 1),
+('Cronograma de ampliación', 'Cronograma de ampliación de la obra', 3),
+('Cronograma de rehabilitación', 'Cronograma de rehabilitación de la obra', 4),
+('Cronograma de demolicion', 'Cronograma de demolicion de la obra', 2);
+
+INSERT INTO Proyecto (nombre, descripcion, montoExtra, fechaInicio, fechaFinal, idCronograma, idEstadoProyecto) VALUES
+('Construcción de baño', 'Proyecto de Construcción de baño', 100000.00, '2022-01-01', '2023-01-01', 1, 2),
+('Construccion de living', 'Proyecto de Construccion de living', 200000.00, '2022-02-01', '2022-12-01', 1, 1),
+('Construccion de cocina', 'Proyecto de Construccion de cocina', 250000.00, '2022-03-01', '2022-10-01', 2, 1),
+('Contruccion de baño', 'Proyecto de Contruccion de baño', 120000.00, '2022-04-01', '2023-04-01', 4, 4),
+('Construccion de bunker', 'Proyecto de Construccion de bunker', 300000.00, '2022-05-01', '2022-08-01', 5, 5);
+
+INSERT INTO EmpleadosProyecto (idEmpleado, idProyecto) VALUES
+(1, 1),
+(2, 1),
+(3, 2),
+(4, 3),
+(5, 3);
+
+
+INSERT INTO UnidadMedida (nombre, descripcion) VALUES
+('Bolsa', 'Unidad de medida equivalente a una bolsa'),
+('Litro', 'Unidad de medida de volumen'),
+('Kilogramo', 'Unidad de medida de peso'),
+('Unidad', 'Unidad de medida de unidad'),
+('Tablas', 'Unidad de medida de tablas');
+
+INSERT INTO Material (nombre, descripcion, precioUnitario, idUnidadMedida) VALUES
+('Cemento', 'Material de construcción', 50.00, 1),
+('Arena', 'Material de construcción', 20.00, 3),
+('Ladrillo', 'Material de construcción', 1,50, 4),
+('Pintura', 'Material de acabado', 25.00, 2),
+('Madera', 'Material de construcción', 100.00, 5);
+
+INSERT INTO EstadoInventario (nombre, descripcion) VALUES
+('Disponible', 'El material está disponible para su uso'),
+('En uso', 'El material se encuentra en uso'),
+('Agotado', 'El material se ha terminado'),
+('Requerido', 'El material no se encuentra, pero se requiere');
+('Cancelado', 'El material fue cancelado');
+
+INSERT INTO Inventario (cantMaterial, fechaActual, precioUnitarioActual, idProyecto, idMaterial, idEstadoInventario) VALUES
+(100, '2023-03-28', 50.00, 1, 1, 1),
+(200, '2023-02-12', 20.00, 1, 2, 1),
+(500, '2023-01-17', 1.50, 2, 3, 4),
+(50, '2022-08-28', 25.00, 3, 4, 1),
+(1000, '2022-03-03', 50.00, 2, 5, 5);
+
+
+
+
 
 #1 
 SELECT *
