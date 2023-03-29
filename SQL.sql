@@ -171,9 +171,7 @@ CREATE TABLE EmpleadosProyecto (
 CREATE TABLE UnidadMedida (
   idUnidadMedida INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   nombre VARCHAR(50) NOT NULL,
-  descripcion VARCHAR(200),
-  
-  
+  descripcion VARCHAR(200)
 );
 
 CREATE TABLE Material (
@@ -190,7 +188,7 @@ CREATE TABLE Material (
 CREATE TABLE EstadoInventario (
   idEstadoInventario INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50),
-  descripcion TEXT,
+  descripcion VARCHAR(200)
 );
 
 CREATE TABLE Inventario (
@@ -199,7 +197,8 @@ CREATE TABLE Inventario (
   fechaActual DATE,
   precioUnitarioActual DECIMAL(10,2),
   idProyecto INT,
-  idMaterial INT NOT NULL,
+  idMaterial INT,
+  idEstadoInventario INT,
 
   FOREIGN KEY (idProyecto) REFERENCES Proyecto(idProyecto) 
     ON DELETE SET NULL 
