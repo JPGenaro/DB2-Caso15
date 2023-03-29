@@ -321,7 +321,7 @@ INSERT INTO Cronograma (nombre, descripcion, idObra) VALUES
 ('Cronograma de demolicion', 'Cronograma de demolicion de la obra', 2);
 
 INSERT INTO Proyecto (nombre, descripcion, montoExtra, fechaInicio, fechaFinal, idCronograma, idEstadoProyecto) VALUES
-('Construcción de baño', 'Proyecto de Construcción de baño', 100000.00, DATE_SUB(NOW(), INTERVAL 4 MONTH + INTERVAL 19 DAY), '2023-01-01', 1, 1),
+('Construcción de baño', 'Proyecto de Construcción de baño', 100000.00, DATE_SUB(NOW(), INTERVAL 4 MONTH) + INTERVAL 19 DAY, '2023-01-01', 1, 1),
 ('Construccion de living', 'Proyecto de Construccion de living', 200000.00, '2022-02-01', '2022-12-01', 1, 2),
 ('Construccion de cocina', 'Proyecto de Construccion de cocina', 250000.00, '2022-03-01', '2022-10-01', 2, 1),
 ('Contruccion de baño', 'Proyecto de Contruccion de baño', 120000.00, '2022-04-01', '2023-04-01', 4, 4),
@@ -367,15 +367,47 @@ INSERT INTO Inventario (cantMaterial, fechaActual, precioUnitarioActual, idProye
 
 
 #1 
-SELECT EP.nombre,P.fechaInicio
-FROM Proyecto as P INNER JOIN EstadoProyecto as EP ON P.idEstadoProyecto = EP.idEstadoProyecto
-WHERE EP.nombre = 'Progreso'
-AND P.fechaInicio = DATE_SUB(NOW(), INTERVAL 4 MONTH + INTERVAL 19 DAY);
+SELECT P.nombre,EP.nombre,P.fechaInicio
+FROM Proyecto P JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+WHERE EP.nombre = 'Progreso' AND P.fechaInicio = DATE(DATE_SUB(NOW(), INTERVAL 4 MONTH) + INTERVAL 19 DAY);
+
 
 #2
-SELECT SUM(montoExtra) AS montoTotal, MAX(montoExtra) AS maxMonto, MIN(montoExtra) AS minMonto, nombre AS proyecto
-FROM Proyecto
-WHERE idEstadoProyecto = 2 AND fechaFin >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-GROUP BY nombre;
+SELECT SUM(I.precioUnitarioActual*I.cantMaterial)+SUM( DISTINCT P.montoExtra),P.idProyecto
+FROM Inventario I JOIN Proyecto P ON I.idProyecto = P.idProyecto
+JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH));
+
+
+
+SELECT P.idProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+FROM Proyecto P 
+JOIN Inventario I ON P.idProyecto = I.idProyecto
+JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))
+ORDER BY P.idProyecto;
+
+
+
+SELECT I.precioUnitarioActual*I.cantMaterial,P.montoExtra
+FROM Inventario I JOIN Proyecto P ON I.idProyecto = P.idProyecto
+JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH));
 
 #3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
