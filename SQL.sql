@@ -462,12 +462,4 @@ SELECT idEmpleado,Nombre,Apellido,SUM(SueldoPorProyecto) as SueldoTotal,MAX(Suel
     GROUP BY P.idProyecto
   ) proyecto_data on P.idProyecto = proyecto_data.idProyecto
 ) Empleados
-GROUP BY idEmpleado
-;
-
-
-
-
-
-
-
+GROUP BY idEmpleado;
