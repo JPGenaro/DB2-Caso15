@@ -302,9 +302,11 @@ INSERT INTO EstadoRegistroCalidad (nombre, descripcion) VALUES
 INSERT INTO RegistroCalidad (nombre, descripcion, fecha, idObra, idEstadoRegistroCalidad) VALUES
 ('Calidad de materiales', 'Registro de calidad de los materiales utilizados', '2022-12-25', 1, 1),
 ('Calidad de acabados', 'Registro de calidad de los acabados de la obra', '2022-07-15', 2, 2),
-('Calidad de instalaciones', 'Registro de calidad de las instalaciones de la obra', '2023-03-20', 3, 3),
-('Calidad de estructura', 'Registro de calidad de la estructura de la obra', '2022-04-30', 4, 4),
-('Calidad de limpieza', 'Registro de calidad de la limpieza de la obra', '2022-05-10', 5, 5);
+('Calidad de instalaciones', 'Registro de calidad de las instalaciones de la obra', '2023-03-20', 1, 3),
+('Calidad de estructura', 'Registro de calidad de la estructura de la obra', '2022-04-30', 1, 4),
+('Calidad de limpieza', 'Registro de calidad de la limpieza de la obra', '2022-05-10', 5, 5),
+('Calidad de limpieza', 'Registro de calidad de la limpieza de la obra', '2022-12-28', 1, 3),
+('Calidad de acabados', 'Registro de calidad de los acabados de la obra', '2023-01-12', 1, 4);
 
 INSERT INTO EstadoProyecto (nombre, descripcion) VALUES
 ('Progreso', 'Proyecto en desarrollo'),
@@ -360,7 +362,8 @@ INSERT INTO Inventario (cantMaterial, fechaActual, precioUnitarioActual, idProye
 (200, '2023-02-12', 20.00, 1, 2, 1),
 (500, '2023-01-17', 1.50, 2, 3, 4),
 (50, '2022-08-28', 25.00, 3, 4, 1),
-(1000, '2022-03-03', 50.00, 2, 5, 5);
+(1000, '2022-03-03', 50.00, 2, 5, 5),
+(9, '2022-03-03', 50.00, 2, 1, 4);
 
 
 
@@ -373,35 +376,73 @@ WHERE EP.nombre = 'Progreso' AND P.fechaInicio = DATE(DATE_SUB(NOW(), INTERVAL 4
 
 
 #2
-SELECT SUM(I.precioUnitarioActual*I.cantMaterial)+SUM( DISTINCT P.montoExtra),P.idProyecto
-FROM Inventario I JOIN Proyecto P ON I.idProyecto = P.idProyecto
-JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
-WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH));
+SELECT * from (
+  SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+  FROM Proyecto P 
+  JOIN Inventario I ON P.idProyecto = I.idProyecto
+  JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+  WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))
+  GROUP BY P.idProyecto
+) AS FinalizadoEnUltimos6Meses
+UNION ALL
+SELECT * FROM(
+  SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+  FROM Proyecto P 
+  JOIN Inventario I ON P.idProyecto = I.idProyecto
+  JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+  GROUP BY P.idProyecto
+  ORDER BY precio_total ASC
+  LIMIT 1
+) AS PrecioMaximo
+UNION ALL
+SELECT * FROM(
+  SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+  FROM Proyecto P 
+  JOIN Inventario I ON P.idProyecto = I.idProyecto
+  JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+  GROUP BY P.idProyecto
+  ORDER BY precio_total DESC
+  LIMIT 1
+) AS PrecioMinimo;
 
-
-
-SELECT P.idProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
-FROM Proyecto P 
-JOIN Inventario I ON P.idProyecto = I.idProyecto
-JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
-WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))
-ORDER BY P.idProyecto;
-
-
-
-SELECT I.precioUnitarioActual*I.cantMaterial,P.montoExtra
-FROM Inventario I JOIN Proyecto P ON I.idProyecto = P.idProyecto
-JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
-WHERE EP.nombre = 'Finalizado' AND P.fechaFinal >= DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH));
 
 #3
+SELECT P.idProyecto,P.nombre as NombreProyecto,EP.nombre as EstadoProyecto,M.nombre as Material,I.cantMaterial as CantidadMaterial,UM.nombre as UnidadMedida,EI.nombre as EstadoInventario,EO.nombre as EstadoObra
+from Obra O
+JOIN EstadoObra EO on O.idEstadoObra = EO.idEstadoObra
+JOIN Cronograma C on O.idObra = C.idObra 
+JOIN Proyecto P on C.idCronograma = P.idCronograma
+JOIN EstadoProyecto EP on P.idEstadoProyecto = EP.idEstadoProyecto
+JOIN Inventario I on P.idProyecto = I.idProyecto
+JOIN EstadoInventario EI on I.idEstadoInventario = EI.idEstadoInventario
+JOIN Material M on I.idMaterial = M.idMaterial
+JOIN UnidadMedida UM on M.idUnidadMedida = UM.idUnidadMedida
+WHERE EI.nombre = 'Requerido' or EI.nombre =  'Disponible' and EO.nombre = 'En Proceso';
 
+ 
 
-
-
-
-
-
+#4
+SELECT O.idObra,P.idProyecto,P.nombre as NombreProyecto,RC.nombre as VisitasPeriodicas,I.cantMaterial,M.nombre as Material,UM.nombre as UnidadMedida,EI.nombre as EstadoInventario
+from RegistroCalidad RC
+JOIN EstadoRegistroCalidad ERC on RC.idEstadoRegistroCalidad = ERC.idEstadoRegistroCalidad
+JOIN Obra O on  RC.idObra = O.idObra
+JOIN Cronograma C on O.idObra = C.idObra 
+JOIN Proyecto P on C.idCronograma = P.idCronograma
+JOIN EstadoProyecto EP on P.idEstadoProyecto = EP.idEstadoProyecto
+JOIN Inventario I on P.idProyecto = I.idProyecto
+JOIN EstadoInventario EI on I.idEstadoInventario = EI.idEstadoInventario
+JOIN Material M on I.idMaterial = M.idMaterial
+JOIN UnidadMedida UM on M.idUnidadMedida = UM.idUnidadMedida
+WHERE I.cantMaterial = 9 and EI.nombre = 'Requerido' and M.nombre = 'Cemento' and UM.nombre = 'Bolsa' and 
+RC.idObra in (
+  select id from (
+    select COUNT(*) as cant,Obra.idObra as id from Obra
+    JOIN RegistroCalidad on Obra.idObra = RegistroCalidad.idObra
+    group By Obra.idObra
+  )AS cantidad
+    where cant>=5
+  )
+;
 
 
 
