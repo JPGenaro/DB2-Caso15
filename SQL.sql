@@ -307,7 +307,7 @@ INSERT INTO RegistroCalidad (nombre, descripcion, fecha, idObra, idEstadoRegistr
 ('Calidad de limpieza', 'Registro de calidad de la limpieza de la obra', '2022-05-10', 5, 5);
 
 INSERT INTO EstadoProyecto (nombre, descripcion) VALUES
-('En Proceso', 'Proyecto en desarrollo'),
+('Progreso', 'Proyecto en desarrollo'),
 ('Finalizado', 'Proyecto completado'),
 ('Cancelado', 'Proyecto cancelado'),
 ('En Espera', 'Proyecto en espera'),
@@ -321,8 +321,8 @@ INSERT INTO Cronograma (nombre, descripcion, idObra) VALUES
 ('Cronograma de demolicion', 'Cronograma de demolicion de la obra', 2);
 
 INSERT INTO Proyecto (nombre, descripcion, montoExtra, fechaInicio, fechaFinal, idCronograma, idEstadoProyecto) VALUES
-('Construcción de baño', 'Proyecto de Construcción de baño', 100000.00, '2022-01-01', '2023-01-01', 1, 2),
-('Construccion de living', 'Proyecto de Construccion de living', 200000.00, '2022-02-01', '2022-12-01', 1, 1),
+('Construcción de baño', 'Proyecto de Construcción de baño', 100000.00, DATE_SUB(NOW(), INTERVAL 4 MONTH + INTERVAL 19 DAY), '2023-01-01', 1, 1),
+('Construccion de living', 'Proyecto de Construccion de living', 200000.00, '2022-02-01', '2022-12-01', 1, 2),
 ('Construccion de cocina', 'Proyecto de Construccion de cocina', 250000.00, '2022-03-01', '2022-10-01', 2, 1),
 ('Contruccion de baño', 'Proyecto de Contruccion de baño', 120000.00, '2022-04-01', '2023-04-01', 4, 4),
 ('Construccion de bunker', 'Proyecto de Construccion de bunker', 300000.00, '2022-05-01', '2022-08-01', 5, 5);
@@ -367,10 +367,10 @@ INSERT INTO Inventario (cantMaterial, fechaActual, precioUnitarioActual, idProye
 
 
 #1 
-SELECT *
-FROM Proyecto
-WHERE idEstadoProyecto = (SELECT idEstadoProyecto FROM EstadoProyecto WHERE nombre = 'Progreso')
-AND fechaInicio = DATE_SUB(NOW(), INTERVAL 4 MONTH) + INTERVAL 19 DAY;
+SELECT EP.nombre,P.fechaInicio
+FROM Proyecto as P INNER JOIN EstadoProyecto as EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+WHERE EP.nombre = 'Progreso'
+AND P.fechaInicio = DATE_SUB(NOW(), INTERVAL 4 MONTH + INTERVAL 19 DAY);
 
 #2
 SELECT SUM(montoExtra) AS montoTotal, MAX(montoExtra) AS maxMonto, MIN(montoExtra) AS minMonto, nombre AS proyecto
