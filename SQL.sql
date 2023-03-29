@@ -299,7 +299,7 @@ INSERT INTO EstadoRegistroCalidad (nombre, descripcion) VALUES
 ('Pendiente', 'Registro de calidad esta pendiente'),
 ('Cancelado', 'Registro de calidad fue cancelado');
 
-INSERT INTO registroCalidad (nombre, descripcion, fecha, idObra, idEstadoRegistroCalidad) VALUES
+INSERT INTO RegistroCalidad (nombre, descripcion, fecha, idObra, idEstadoRegistroCalidad) VALUES
 ('Calidad de materiales', 'Registro de calidad de los materiales utilizados', '2022-12-25', 1, 1),
 ('Calidad de acabados', 'Registro de calidad de los acabados de la obra', '2022-07-15', 2, 2),
 ('Calidad de instalaciones', 'Registro de calidad de las instalaciones de la obra', '2023-03-20', 3, 3),
