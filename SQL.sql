@@ -447,30 +447,23 @@ RC.idObra in (
 
 
 #5
-SELECT Persona.nombre,P.nombre,P.idProyecto,proyecto_data.precio_total/100 as SueldoPorProyecto
-FROM EmpleadosProyecto E_P
-JOIN Empleado E on E_P.idEmpleado = E.idEmpleado
-JOIN Personas Persona on E.idEmpleado = Persona.idPersona
 
-JOIN Proyecto P on E_P.idProyecto = P.idProyecto
-JOIN (
-  SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
-  FROM Proyecto P 
-  JOIN Inventario I ON P.idProyecto = I.idProyecto
-  JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
-  GROUP BY P.idProyecto
-) proyecto_data on P.idProyecto = proyecto_data.idProyecto
-
-
-SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
-FROM Proyecto P 
-JOIN Inventario I ON P.idProyecto = I.idProyecto
-JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
-GROUP BY P.idProyecto
-
-
-
-
+SELECT idEmpleado,Nombre,Apellido,SUM(SueldoPorProyecto) as SueldoTotal,MAX(SueldoPorProyecto) as MaximoSueldoProyecto,MIN(SueldoPorProyecto) as MinimoSueldoProyecto from (
+  SELECT Persona.idPersona as idEmpleado,Persona.nombre as Nombre,Persona.apellido as Apellido,P.nombre as NombreProyecto,P.idProyecto,proyecto_data.precio_total/100 as SueldoPorProyecto
+  FROM EmpleadosProyecto E_P
+  JOIN Empleado E on E_P.idEmpleado = E.idEmpleado
+  JOIN Personas Persona on E.idEmpleado = Persona.idPersona
+  JOIN Proyecto P on E_P.idProyecto = P.idProyecto
+  JOIN (
+    SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+    FROM Proyecto P 
+    JOIN Inventario I ON P.idProyecto = I.idProyecto
+    JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+    GROUP BY P.idProyecto
+  ) proyecto_data on P.idProyecto = proyecto_data.idProyecto
+) Empleados
+GROUP BY idEmpleado
+;
 
 
 
