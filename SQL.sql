@@ -331,6 +331,7 @@ INSERT INTO Proyecto (nombre, descripcion, montoExtra, fechaInicio, fechaFinal, 
 
 INSERT INTO EmpleadosProyecto (idEmpleado, idProyecto) VALUES
 (3, 1),
+(3, 2),
 (4, 1),
 (7, 2),
 (9, 3),
@@ -443,6 +444,31 @@ RC.idObra in (
     where cant>=5
   )
 ;
+
+
+#5
+SELECT Persona.nombre,P.nombre,P.idProyecto,proyecto_data.precio_total/100 as SueldoPorProyecto
+FROM EmpleadosProyecto E_P
+JOIN Empleado E on E_P.idEmpleado = E.idEmpleado
+JOIN Personas Persona on E.idEmpleado = Persona.idPersona
+
+JOIN Proyecto P on E_P.idProyecto = P.idProyecto
+JOIN (
+  SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+  FROM Proyecto P 
+  JOIN Inventario I ON P.idProyecto = I.idProyecto
+  JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+  GROUP BY P.idProyecto
+) proyecto_data on P.idProyecto = proyecto_data.idProyecto
+
+
+SELECT P.idProyecto,P.nombre as NombreProyecto,SUM(I.precioUnitarioActual*I.cantMaterial) + P.montoExtra as precio_total
+FROM Proyecto P 
+JOIN Inventario I ON P.idProyecto = I.idProyecto
+JOIN EstadoProyecto EP ON P.idEstadoProyecto = EP.idEstadoProyecto
+GROUP BY P.idProyecto
+
+
 
 
 
